@@ -1,0 +1,123 @@
+attributes:
+- beginString: ((\/\/)|\s|^)(http://|https://)
+  endString: (\n|\s|\\|$)
+  ignoreCase: true
+  regularExpression: true
+- beginString: '[@|$][\w]+'
+  regularExpression: true
+characters:
+- beginString: ''''
+  endString: ''''
+- beginString: '[<|>|?|+|\-|*|=|\\|;|"|''|~|`|!|%|^|&|*|(|)|\[|\]|\:|\.]'
+  ignoreCase: false
+  regularExpression: true
+commands: []
+commentDelimiters:
+  beginDelimiter: /*
+  endDelimiter: '*/'
+  inlineDelimiter: '# '
+comments:
+- beginString: (\s#)|(^#)
+  endString: $
+  regularExpression: true
+completions: []
+extensions:
+- keyString: gd
+interpreters:
+- {}
+keywords:
+- beginString: await
+- beginString: bool
+- beginString: class
+- beginString: class_name
+- beginString: const
+- beginString: elif
+- beginString: else
+- beginString: enum
+- beginString: float
+- beginString: for
+- beginString: func
+- beginString: if
+- beginString: import
+- beginString: is
+- beginString: match
+- beginString: not
+- beginString: or
+- beginString: render_mode
+- beginString: return
+- beginString: shader_type
+- beginString: static
+- beginString: uniform
+- beginString: var
+- beginString: void
+kind: general
+metadata:
+  author: fistnine
+  lastModified: '2022-06-19'
+  version: '1.0'
+numbers:
+- beginString: '0'
+  description: zero
+- beginString: \b-?[1-9][0-9]*l?\b
+  description: integer
+  ignoreCase: true
+  regularExpression: true
+- beginString: \b-?\d+\.\d+(e[-+]?\d+)?[lf]?\b
+  description: float
+  ignoreCase: true
+  regularExpression: true
+- beginString: \b0[1-7][0-7]*+l?\b
+  description: octal
+  ignoreCase: true
+  regularExpression: true
+- beginString: \b0x[0-9a-f]+l?\b
+  description: hex
+  ignoreCase: true
+  regularExpression: true
+outlineMenu:
+- beginString: ^(#.+)$
+  bold: true
+  ignoreCase: false
+- beginString: ^([\t ]+#.+)$
+  ignoreCase: false
+  italic: true
+  underline: false
+- beginString: ^enum[\t ]+(\w+)
+  description: enum
+- beginString: ^Dictionary[\t ]+(\w+)
+  description: Dictionary
+strings:
+- beginString: '"'
+  endString: '"'
+  ignoreCase: false
+  regularExpression: false
+- beginString: 《
+  endString: 》
+  ignoreCase: false
+  regularExpression: false
+types:
+- beginString: (Ani|Vis|Pro|Ref|Con|Col|Str|Ray|Col|Arr|Server|Navigation)
+  endString: \s|\W
+  regularExpression: true
+- beginString: (Vector|Rect|Physic|Engine|Input|Canvas|UPNP|Access|Material|Container|Node|Font|Packed|Array|Parallax|Body)
+  endString: \s|\W
+  regularExpression: true
+- beginString: \w+(Container|Access|Server|Font|Body)
+  regularExpression: true
+- beginString: \w+(Str)
+  regularExpression: true
+- beginString: Control
+- beginString: Decal
+- beginString: Object
+  ignoreCase: false
+- beginString: OS
+- beginString: Resource
+- beginString: Texture
+- beginString: Time
+- beginString: Timer
+- beginString: Tween
+values:
+- beginString: 'false'
+- beginString: 'null'
+- beginString: 'true'
+variables: []
