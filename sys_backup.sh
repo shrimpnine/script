@@ -77,9 +77,9 @@ do
 	fi
 done
 
-arrlistfile=($(awk -v RS=' ' '!a[$1]++' <<< ${arrlistfile[@]})) #清理重复的行
-
+#arrlistfile=($(awk -v RS=' ' '!a[$1]++' <<< ${arrlistfile[@]})) #清理重复的行
 declare -a _new_arrlistfile #初始化 文件数组
+
 for line in "${arrlistfile[@]}"
 do
 	if [ -e $line ] ; then #判断目录或文件是否存在
