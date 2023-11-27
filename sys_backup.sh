@@ -131,7 +131,6 @@ if $_packge ; then #打包
 	fi
 	echo "******"
 	echo "# Packing Complete."
-	echo "# Extract files: tar -pzxvf $(date +%Y%m%d)_sys_backup.tgz"
 fi
 
 echo "# Have been $_file_sum files backup."
