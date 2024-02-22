@@ -17,7 +17,7 @@ do
 		echo "容器ID: $_containerID"
 
 		_containerName=`sudo docker inspect --format='{{.Name}}' $_containerID`
-		_containerName=${_containerName#*/}
+		_containerName=${_containerName##*/}
 		echo "容器name: $_containerName" #获取镜像名字
 
 		sudo docker rm $_containerName #删除所有不是latest的容器
