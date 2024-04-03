@@ -6,8 +6,6 @@ attributes:
 - beginString: '[@|$][\w]+'
   regularExpression: true
 characters:
-- beginString: ''''
-  endString: ''''
 - beginString: '[<|>|?|+|\-|*|=|\\|;|"|''|~|`|!|%|^|&|*|(|)|\[|\]|\:|\.]'
   ignoreCase: false
   regularExpression: true
