@@ -20,6 +20,7 @@ do
 		_containerName=${_containerName##*/}
 		echo "容器name: $_containerName" #获取镜像名字
 
+		sudo docker stop $_containerName #停止所有不是latest的容器
 		sudo docker rm $_containerName #删除所有不是latest的容器
 		_dockerRunScript=$_docker_run_dir/$_containerName.sh
 		echo "容器run脚本: $_dockerRunScript" #重启docker的脚本
@@ -33,5 +34,3 @@ do
 		sudo docker rmi $i #清理更新后<none>的镜像
 	fi
 done
-
-
