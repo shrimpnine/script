@@ -9,7 +9,6 @@ characters:
 - beginString: ''''
   endString: ''''
 - beginString: '[<|>|?|+|\-|*|=|\\|;|"|''|~|`|!|%|^|&|*|(|)|\[|\]|\:|\.]'
-  ignoreCase: false
   regularExpression: true
 commands: []
 commentDelimiters:
@@ -23,8 +22,8 @@ comments:
 completions: []
 extensions:
 - keyString: gd
-interpreters:
-- {}
+filenames: []
+interpreters: []
 keywords:
 - beginString: await
 - beginString: bool
@@ -52,7 +51,7 @@ keywords:
 - beginString: void
 kind: general
 metadata:
-  author: fistnine
+  author: ShrimpNine
   lastModified: '2022-06-19'
   version: '1.0'
 numbers:
@@ -77,24 +76,21 @@ numbers:
 outlineMenu:
 - beginString: ^(#.+)$
   bold: true
-  ignoreCase: false
+  keyString: ''
 - beginString: ^([\t ]+#.+)$
-  ignoreCase: false
   italic: true
-  underline: false
-- beginString: ^enum[\t ]+(\w+)
-  description: enum
+  keyString: ''
 - beginString: ^Dictionary[\t ]+(\w+)
   description: Dictionary
+  keyString: ''
+- beginString: ^enum[\t ]+(\w+)
+  description: enum
+  keyString: ''
 strings:
 - beginString: '"'
   endString: '"'
-  ignoreCase: false
-  regularExpression: false
 - beginString: 《
   endString: 》
-  ignoreCase: false
-  regularExpression: false
 types:
 - beginString: (Ani|Vis|Pro|Ref|Con|Col|Str|Ray|Col|Arr|Server|Navigation)
   endString: \s|\W
@@ -109,7 +105,6 @@ types:
 - beginString: Control
 - beginString: Decal
 - beginString: Object
-  ignoreCase: false
 - beginString: OS
 - beginString: Resource
 - beginString: Texture
