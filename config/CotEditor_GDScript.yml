@@ -22,6 +22,8 @@ comments:
 completions: []
 extensions:
 - keyString: gd
+- keyString: tres
+- keyString: tscn
 filenames: []
 interpreters: []
 keywords:
@@ -36,20 +38,23 @@ keywords:
 - beginString: float
 - beginString: for
 - beginString: func
+- beginString: get
 - beginString: if
 - beginString: import
+- beginString: int
 - beginString: is
 - beginString: match
 - beginString: not
 - beginString: or
 - beginString: render_mode
 - beginString: return
+- beginString: set
 - beginString: shader_type
 - beginString: static
 - beginString: uniform
 - beginString: var
 - beginString: void
-kind: general
+kind: code
 metadata:
   author: ShrimpNine
   lastModified: '2022-06-19'
@@ -104,6 +109,7 @@ types:
   regularExpression: true
 - beginString: Control
 - beginString: Decal
+- beginString: Dictionary
 - beginString: Object
 - beginString: OS
 - beginString: Resource
