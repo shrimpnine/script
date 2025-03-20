@@ -1,12 +1,27 @@
 #!/bin/bash
 
-IFS=$'\n'
-_docker_run_dir="/home/shrimp/docker_conf/docker_run" #运行重启docker容器的脚本文件夹
+function fn_help() {
+    echo "Example:"
+    echo "  $0 ./Example/docker_conf"
+    exit 1
+}
+while getopts h: opt;
+do
+    case $opt in
+        h) fn_help ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+if [ ! $1 ] || [ ! -d $1 ] ; then echo "    docker_run_dir not is folder." ; fn_help ; fi
+MAX_OPTION=1 #最大参数数量
+if (( $# > $MAX_OPTION )); then fn_help; fi
+shift $((OPTIND-1))
+_docker_run_dir="$1" #运行重启docker容器的脚本文件夹
 
 sudo docker images | grep -v REPOSITORY | awk '{print $1}' | sudo xargs -L1 docker pull #更新所有镜像
-
 #sudo docker ps -a | grep -v CONTAINER | awk '{print $2}' | #删除所有旧版本的容器
 
+IFS=$'\n'
 for i in `sudo docker ps -a | grep -v CONTAINER`
 do
 	_image=`echo $i | awk '{print $2}' | grep -v :latest` #获取镜像ID

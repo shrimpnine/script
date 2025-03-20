@@ -46,6 +46,7 @@ keywords:
 - beginString: match
 - beginString: not
 - beginString: or
+- beginString: pass
 - beginString: render_mode
 - beginString: return
 - beginString: set

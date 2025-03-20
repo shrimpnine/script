@@ -1,0 +1,46 @@
+#!/bin/bash
+
+function fn_help() {
+    echo "Example:"
+    echo -e "\t$0 -d \"string\" ./*.mkv"
+    echo -e "\t$0 -r -d \"string\" ./*.txt"
+    echo -e "\t\t-r Reverse delete string"
+    exit 1
+}
+while getopts hrd: opt; do
+    case $opt in
+        h) fn_help ;;
+        r) _delete_reverse=true ;;
+        d) _delete_string=$OPTARG ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+shift $((OPTIND-1))
+if [ ! $1 ]; then fn_help ; fi
+if [ ! $_delete_string ] ; then echo "no delete_string" ; fn_help ; fi
+
+_IFS=$IFS
+IFS=$(echo -en "\n\b")
+
+for _file in $@ ; do
+    if [ ! -f $_file ]; then echo "\"$_file\" not found." ; fn_help ; fi
+    _real_path=`realpath $_file`
+    _file_name=${_real_path##*/} #获取文件名 包括后缀
+    _suffix=.${_file_name##*.} #文件后缀
+    _file_name=${_file_name%$_suffix*} #获取单纯的文件名
+    _file_dir=${_real_path%/*}/ #文件目录
+
+    if [ $_delete_reverse ] ; then
+        _out_name=$_file_dir$_delete_string${_file_name##*$_delete_string}$_suffix
+	else
+	    _out_name=$_file_dir${_file_name%%$_delete_string*}$_delete_string$_suffix
+	fi
+	if [ -f $_out_name ] ; then
+	   echo "Skip the: $_real_path"
+	    echo -e "\tSame file: \"$_out_name\""
+	else
+		mv -vn $_real_path $_out_name
+	fi
+done
+
+IFS=$_IFS

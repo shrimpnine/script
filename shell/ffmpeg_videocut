@@ -1,0 +1,61 @@
+#! /bin/bash
+
+#ffmpeg_videocut file.mp4 0:10:00 0:20:00
+#根据时间来剪辑视频
+#输出file_out.mp4
+
+function fn_help() {
+    echo "Example:"
+    echo "  $0 file.mp4 0:10:00 0:20:00"
+    echo "  cut 10 min:: file_out.mp4"
+    exit 1
+}
+while getopts h: opt;
+do
+    case $opt in
+        h) fn_help ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+if [ ! "$1" ]; then fn_help ; fi
+MAX_OPTION=1 #最大参数数量
+if (( $# > $MAX_OPTION )); then fn_help; fi
+shift $((OPTIND-1))
+
+if [ ! -f $1 ] ; then fn_help ; fi
+
+function fn_clear_0(){
+    echo $(echo -e $1 | sed -r 's/0*([0-9])/\1/')
+}
+
+file=${1}
+
+_s_h=${2%%:*}
+_s_h=`fn_clear_0 $_s_h`
+_s_h=$(($_s_h*60*60))
+_s_m=${2#*:}
+_s_m=${_s_m%%:*}
+_s_m=`fn_clear_0 $_s_m`
+_s_m=$(($_s_m*60))
+_s_s=${2##*:}
+_s_s=$((_s_h+_s_m+_s_s))
+
+
+_e_h=${3%%:*}
+_e_h=`fn_clear_0 $_e_h`
+_e_h=$((_e_h*60*60))
+_e_m=${3#*:}
+_e_m=${_e_m%%:*}
+_e_m=`fn_clear_0 $_e_m`
+_e_m=$((_e_m*60))
+_e_s=${3##*:}
+_e_s=$((_e_h+_e_m+_e_s))
+_e_s=$((_e_s-_s_s))
+
+if [ $_e_s -le 0 ] ; then
+	echo "error: cut end is $_e_s"
+	fn_help
+	exit
+fi
+
+ffmpeg -ss $_s_s -i $file -to $_e_s -c copy ${file%.*}_out.${file##*.}

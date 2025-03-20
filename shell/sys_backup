@@ -1,10 +1,4 @@
 #!/bin/bash
-#example: sys_basckup.sh -y7 -p 123 -l ./sys_backup_list -o ~/backup/
-#-l 指定sys_backup_list文件路径 默认提取当前目录下的sys_backup_list文件
-#-y -n 是否打包
-#-7 用7z打包 默认tar
-#-p 123 添加7z打包的密码
-#-o 指定打包输出目录 默认输出到当前执行脚本的目录下
 
 _packge=false #是否打包
 _packge_no=false #是否跳过打包
@@ -16,8 +10,19 @@ _sys_backup_list="sys_backup_list" #默认list文件的名字
 _out="$(date +%Y%m%d_%H%M%S)_sys_backup" #输出文件夹的名字
 _outpath="$_pwd/$_out" #目标目录 默认当前目录下的out目录
 
-while getopts 'l:o:p:yn7' opt; do
+function fn_help() {
+    echo "Example:"
+    echo "  $0 -y7 -p 123 -l ./Example/sys_backup/sys_backup_list -o ~/backup/"
+    echo "      -l 指定sys_backup_list文件路径 默认提取当前目录下的sys_backup_list文件"
+    echo "      -y -n 是否打包 默认false"
+    echo "      -7 用7z打包 默认tar"
+    echo "      -p 123 添加7z打包的密码"
+    echo "      -o 指定打包输出目录 默认输出到当前执行脚本的目录下"
+    exit 1
+}
+while getopts hlopyn7: opt; do
     case ${opt} in
+        h) fn_help ;;
     	l)
     	_pwd=${OPTARG%/*}
     	_sys_backup_list=${OPTARG##*/} #指定list文件的名字
@@ -27,7 +32,7 @@ while getopts 'l:o:p:yn7' opt; do
         y) _packge=true ;;
         n) _packge_no=true ;;
         7) _packgecmd="7z" ;;
-        ?) echo "# Argument Error：$OPTARG" 1>&2 ;exit 2
+        ?) echo "# Argument Error：$OPTARG" 1>&2 ; fn_help
     esac
 done
 

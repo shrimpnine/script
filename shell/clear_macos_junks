@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function fn_help() {
+    echo "Example:"
+    echo "  $0 /mnt/*"
+    exit 1
+}
+while getopts h: opt;
+do
+    case $opt in
+        h) fn_help ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+if [ ! $1 ] ; then fn_help ; fi
+shift $((OPTIND-1))
+
+IFS=$'\n'
+for _dir in $*
+do
+    if [ -d $_dir ] ; then
+        find $_dir -type f -name "._*" -delete -o -type f -name ".DS_Store" -delete
+    else
+        echo "\"$_dir\" not is folder. skip this."
+    fi
+done

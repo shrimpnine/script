@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function fn_help() {
+    echo "Example:"
+    echo "  $0 ./*.jpg"
+    exit 1
+}
+while getopts h: opt;
+do
+    case $opt in
+        h) fn_help ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+if [ ! $1 ] ; then fn_help ; fi
+shift $((OPTIND-1))
+
+IFS=$'\n'
+for _file in $*
+do
+    if [ -f $_file ] ; then
+        ffmpeg -i $_file -c:v libaom-av1 -still-picture 1 ${_file%.*}.avif
+    else
+    	echo "\"$_file\" this not is a file."
+    fi
+done

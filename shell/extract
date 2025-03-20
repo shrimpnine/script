@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#输入所有需要解压的文件
+#自动检测格式
+#将所有输入需要解压的文件解压到当前文件夹
+
+function fn_help() {
+    echo "Example:"
+    echo "  $0 ./*.zip"
+    exit 1
+}
+while getopts h: opt;
+do
+    case $opt in
+        h) fn_help ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+if [ ! "$1" ] ; then fn_help ; fi
+MAX_OPTION=1 #最大参数数量
+if (( $# > $MAX_OPTION )); then fn_help; fi
+shift $((OPTIND-1))
+
+IFS=$'\n'
+
+for _file in $@ ; do
+	if [ -f $_file ]; then #判断是否为文件
+    	_prefix=${_file%.*} #文件路径
+    	_suffix=${_file##*.} #文件后缀
+		case $_suffix in
+			"iso")
+				if [[ $_suffix == "iso" ]] ; then
+					7z x -o"$_prefix" "$_file"
+				fi
+			;;
+			"rar")
+				echo -n "Case:RAR: "
+				echo "$_file"
+				#写入解压rar文件的命令
+				echo "还未制作解压rar文件的命令"
+				exit
+			;;
+            "zip")
+                    7z x -o"$_prefix" "$_file"
+            ;;
+		esac
+	else
+		echo "没找到输入的文件: $_file"
+		exit
+	fi
+done

@@ -1,0 +1,47 @@
+#!/bin/bash
+list_dir=/mnt/disk0/programs/music/list
+
+function fn_help() {
+    echo "Example:"
+    echo "  $0 music_name"
+    echo "  搜索歌曲名 并列出所在曲目中"
+    exit 1
+}
+while getopts h: opt;
+do
+    case $opt in
+        h) fn_help ;;
+        ?) echo "error：$OPTARG" ; fn_help
+    esac
+done
+if [ ! "$1" ]; then fn_help ; fi
+MAX_OPTION=1 #最大参数数量
+if (( $# > $MAX_OPTION )); then fn_help; fi
+shift $((OPTIND-1))
+
+IFS=$'\n'
+_if_get=false
+declare -a filter_lists
+filter_lists=("${filter_lists[@]}" "#All_music.m3u") #排除列表
+
+echo "开始在 \"$list_dir\" 文件夹中搜索:"
+echo "##"
+
+for list in `ls $list_dir/*.m3u`
+do
+    is_filter_list=false
+    for filter_list in ${filter_lists[*]}; do
+        if [ $filter_list == `basename $list` ]; then is_filter_list=true ; fi
+    done
+    if ! $is_filter_list; then
+        for music_name in `cat $list |grep -i "$1"`; do
+            echo $list
+            if [[ $music_name ]] ; then
+                _if_get=true
+                echo -e "\t${music_name##*\/}"
+            fi
+        done
+    fi
+done
+
+if ! $_if_get; then echo "没有找到相关音乐"; fi
