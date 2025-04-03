@@ -17,12 +17,9 @@ do
     esac
 done
 if [ ! "$1" ] ; then fn_help ; fi
-MAX_OPTION=1 #最大参数数量
-if (( $# > $MAX_OPTION )); then fn_help; fi
 shift $((OPTIND-1))
 
 IFS=$'\n'
-
 for _file in $@ ; do
 	if [ -f $_file ]; then #判断是否为文件
     	_prefix=${_file%.*} #文件路径
@@ -41,7 +38,7 @@ for _file in $@ ; do
 				exit
 			;;
             "zip")
-                    7z x -o"$_prefix" "$_file"
+                7z x -o"$_prefix" "$_file"
             ;;
 		esac
 	else
