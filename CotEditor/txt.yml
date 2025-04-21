@@ -23,23 +23,15 @@ extensions:
 filenames: []
 interpreters: []
 keywords:
-- beginString: class
-- beginString: const
-- beginString: enum
-- beginString: for
-- beginString: func
-- beginString: if
-- beginString: import
-- beginString: return
-- beginString: static
-- beginString: switch
+- beginString: ^((\s?)|(\t?))+(for|class|const|enum|func|if|import|return|static|switch)\s
+  regularExpression: true
 kind: general
 metadata:
   author: ShrimpNine
-  lastModified: '2022-06-19'
+  lastModified: '2025-04-21'
   version: '1.0'
 numbers:
-- beginString: '[0-9]'
+- beginString: \d
   regularExpression: true
 outlineMenu:
 - beginString: ^(#.+)$
