@@ -95,7 +95,7 @@ for line in ${arrlistfile[@]} ; do
                     max_bar_width=$((term_cols - ${#_file_sum} - 11))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
                     printf "\r\033[K"
                     printf "Progress:%s:%s" "$_file_sum" "${f:0:$max_bar_width}"
-                    cp -a $f $_outpath${line}/
+                    cp -a $f $_outpath${line}
                     sleep 0.001
 			    else
 					printf "\r\033[K"
@@ -111,7 +111,7 @@ for line in ${arrlistfile[@]} ; do
             max_bar_width=$((term_cols - ${#_file_sum} - 3))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
             printf "\r\033[K"
             printf "Progress:%s:%s" "$_file_sum" "${line:0:$max_bar_width}"
-            cp -a $line $_outpath${line}/
+            cp -a $line $_outpath${line}
             sleep 0.001
 		else
 		    printf "\r\033[K"
