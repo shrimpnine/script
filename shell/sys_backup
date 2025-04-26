@@ -12,20 +12,21 @@ _outpath="$_pwd/$_out" #目标目录 默认当前目录下的out目录
 
 function fn_help() {
     echo "Example:"
-    echo "  $0 -y7 -p 123 -l ./Example/sys_backup/sys_backup_list -o ~/backup/"
-    echo "      -l 指定sys_backup_list文件路径 默认提取当前目录下的sys_backup_list文件"
-    echo "      -y -n 是否打包 默认false"
-    echo "      -7 用7z打包 默认tar"
-    echo "      -p 123 添加7z打包的密码"
-    echo "      -o 指定打包输出目录 默认输出到当前执行脚本的目录下"
+    echo -e "\t$0 -y7 -p 123 -l ./Example/sys_backup/sys_backup_list -o ~/backup/"
+    echo -e "\t\t-l 指定sys_backup_list文件路径 默认提取当前目录下的sys_backup_list文件"
+    echo -e "\t\t-y -n 是否打包 默认false"
+    echo -e "\t\t-7 用7z打包 默认tar"
+    echo -e "\t\t-p 123 添加7z打包的密码"
+    echo -e "\t\t-o 指定打包输出目录 默认输出到当前执行脚本的目录下"
     exit 1
 }
-while getopts hlopyn7: opt; do
+while getopts hl:o:p:yn7 opt; do
     case ${opt} in
         h) fn_help ;;
     	l)
     	_pwd=${OPTARG%/*}
     	_sys_backup_list=${OPTARG##*/} #指定list文件的名字
+        echo "执行了"
     	;;
         o) _outpath="$OPTARG/$_out" ;;
         p) _packgecmd_password=$OPTARG ;;
@@ -38,6 +39,7 @@ done
 
 if [ ! -f $_pwd/$_sys_backup_list ] ; then #检查list文件是否存在
 	echo "# Cannot access $_pwd/$_sys_backup_list..." 1>&2
+
 	echo "# Please create and designate $_sys_backup_list." 1>&2
 	exit 2
 fi
