@@ -132,9 +132,9 @@ if $_packge ; then #打包
 	elif [[ $_packgecmd == "7z" ]] ; then
 		echo "# Packing.... $_out.7z"
 		if [[ $_packgecmd_password != "" ]] ; then
-			7za a -sdel -mhe=on -p$_packgecmd_password $_out.7z $_out
+			7zz a -sdel -mhe=on -p$_packgecmd_password $_out.7z $_out
 		else
-			7za a -sdel $_out.7z $_out
+			7zz a -sdel $_out.7z $_out
 		fi
 	fi
 	echo "******"
