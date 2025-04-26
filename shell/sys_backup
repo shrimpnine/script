@@ -24,9 +24,8 @@ while getopts hl:o:p:yn7 opt; do
     case ${opt} in
         h) fn_help ;;
     	l)
-    	_pwd=${OPTARG%/*}
-    	_sys_backup_list=${OPTARG##*/} #指定list文件的名字
-        echo "执行了"
+           	_pwd=${OPTARG%/*}
+           	_sys_backup_list=${OPTARG##*/} #指定list文件的名字
     	;;
         o) _outpath="$OPTARG/$_out" ;;
         p) _packgecmd_password=$OPTARG ;;
@@ -37,17 +36,16 @@ while getopts hl:o:p:yn7 opt; do
     esac
 done
 
-if [ ! -f $_pwd/$_sys_backup_list ] ; then #检查list文件是否存在
+if [[ ! -f $_pwd/$_sys_backup_list ]] ; then #检查list文件是否存在
 	echo "# Cannot access $_pwd/$_sys_backup_list..." 1>&2
-
 	echo "# Please create and designate $_sys_backup_list." 1>&2
 	exit 2
 fi
 
 echo "# Backup start..."
 
-if (! $_packge_no );then #没有指定-y -n 参数时 选择是否打包
-	if (! $_packge );then
+if [[ ! $_packge_no ]] ; then #没有指定-y -n 参数时 选择是否打包
+	if [[ ! $_packge ]] ; then
 		while true
 		do
 			echo "# Packed as *.$_packgecmd? [Y\n]"
@@ -67,12 +65,11 @@ if (! $_packge_no );then #没有指定-y -n 参数时 选择是否打包
 	fi
 fi
 
-_IFS="$IFS" #备份IFS变量
-IFS=$'\n' #修改分隔符
-declare -a arrlistfile #初始化 文件数组
-for line in `cat $_pwd/$_sys_backup_list` #lsit文件 存为数组 将arrlistfile过滤为绝对目录
-do
-	if [[ ! $line =~ (^$)|(^#)|(^.+#) ]]; then #忽略空行和注释行
+_IFS="$IFS"
+IFS=$'\n'
+declare -a arrlistfile
+for line in `cat $_pwd/$_sys_backup_list` ; do #lsit文件 存为数组 将arrlistfile过滤为绝对目录
+	if [[ ! $line =~ (^$)|(^#)|(^.+#) ]] ; then #忽略空行和注释行
 		if [[ $line =~ (/$) ]]; then #清理目录末尾的/字符
 			line=${line%/*} #从右向左截取第一个/后面的字符串
 		fi
@@ -84,45 +81,49 @@ do
 	fi
 done
 
-#arrlistfile=($(awk -v RS=' ' '!a[$1]++' <<< ${arrlistfile[@]})) #清理重复的行
-declare -a _new_arrlistfile #初始化 文件数组
-
-for line in "${arrlistfile[@]}"
-do
-	if [ -e $line ] ; then #判断目录或文件是否存在
-		if [ -d $line ] ; then #如果是目录
-			for d in `find $line -type d` #列出目录下的所有文件文件夹
-			do
-				mkdir -p $_outpath$d #输出文件夹内创建目录
-			done
-			for f in `find $line -type f` #列出目录下的所有文件
-			do
-				if [[ ! $f =~ "._"|".DS_Store" ]] ; then #忽略.DS_Store和._前缀的Mac缓存文件
-					_new_arrlistfile=("${_new_arrlistfile[@]}" $f)
+_file_sum=0 #计数
+for line in ${arrlistfile[@]} ; do
+	if [[ -e $line ]] ; then
+		if [[ -d $line ]] ; then
+    		for d in `find $line -type d` ; do #列出目录下的所有文件文件夹
+    			mkdir -p $_outpath$d #输出文件夹内创建目录
+    		done
+    		for f in `find $line -type f` ; do #列出目录下的所有文件
+    			if [[ ! $f =~ ^\._*$|\.DS_Store$ ]] ; then #忽略.DS_Store和._前缀的Mac缓存文件
+                    ((_file_sum++))
+                    term_cols=$(tput cols)  # 获取终端宽度
+                    max_bar_width=$((term_cols - ${#_file_sum} - 11))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
+                    printf "\r\033[K"
+                    printf "Progress:%s:%s" "$_file_sum" "${f:0:$max_bar_width}"
+                    cp -a $f $_outpath${line}/
+                    sleep 0.001
+			    else
+					printf "\r\033[K"
+			        echo "## Ignored: $f "
 				fi
-			done
-		elif [ -f $line ] ; then #如果是文件 创建文件夹
-			#判断备份目录是否有对应文件夹 是就直接复制 否就创建对应目录
-			if [ -d $_outpath${line%/*} ] ; then
-				_new_arrlistfile=("${_new_arrlistfile[@]}" $line)
-			else
+    		done
+		elif [[ -f $line ]] ; then
+			if [[ ! -d $_outpath${line%/*} ]] ; then
 				mkdir -p $_outpath${line%/*}
 			fi
+			((_file_sum++))
+            term_cols=$(tput cols)  # 获取终端宽度
+            max_bar_width=$((term_cols - ${#_file_sum} - 3))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
+            printf "\r\033[K"
+            printf "Progress:%s:%s" "$_file_sum" "${line:0:$max_bar_width}"
+            cp -a $line $_outpath${line}/
+            sleep 0.001
+		else
+		    printf "\r\033[K"
+		    echo "## \"$line\": What is this????"
 		fi
 	else
+	    printf "\r\033[K"
 		echo "## \"$line\": No such file or directory. Be ignored" 1>&2
 	fi
 done
 
-_file_sum=0
-for line in "${_new_arrlistfile[@]}"
-do
-	cp -av "$line" "$_outpath$line"
-	((_file_sum++))
-done
-
 IFS="$_IFS" #还原IFS变量
-
 if $_packge ; then #打包
 	cd ${_outpath%/*}
 	if [[ $_packgecmd == "tar" ]] ; then
