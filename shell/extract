@@ -9,7 +9,7 @@ function fn_help() {
     echo "  $0 ./*.zip"
     exit 1
 }
-while getopts h: opt;
+while getopts h opt;
 do
     case $opt in
         h) fn_help ;;
@@ -21,7 +21,7 @@ shift $((OPTIND-1))
 
 IFS=$'\n'
 for _file in $@ ; do
-	if [ -f $_file ]; then #判断是否为文件
+	if [[ -f $_file ]]; then #判断是否为文件
     	_prefix=${_file%.*} #文件路径
     	_suffix=${_file##*.} #文件后缀
 		case $_suffix in
@@ -38,7 +38,10 @@ for _file in $@ ; do
 				exit
 			;;
             "zip")
-                7z x -o"$_prefix" "$_file"
+                7zz x -o"$_prefix" "$_file"
+            ;;
+            "7z")
+                7zz x -o"$_prefix" "$_file"
             ;;
 		esac
 	else
