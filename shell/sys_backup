@@ -82,6 +82,15 @@ for line in `cat $_pwd/$_sys_backup_list` ; do #lsit文件 存为数组 将arrli
 done
 
 _file_sum=0 #计数
+function fn_cp_file {
+    ((_file_sum++))
+    term_cols=$(tput cols)  # 获取终端宽度
+    max_bar_width=$((term_cols - ${#_file_sum} - 11))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
+    printf "\r\033[K"
+    printf "Progress:%s:%s" "$_file_sum" "${f:0:$max_bar_width}"
+    cp -a $1 $2
+}
+
 for line in ${arrlistfile[@]} ; do
 	if [[ -e $line ]] ; then
 		if [[ -d $line ]] ; then
@@ -90,31 +99,17 @@ for line in ${arrlistfile[@]} ; do
     		done
     		for f in `find $line -type f` ; do #列出目录下的所有文件
     			if [[ ! $f =~ ^\._*$|\.DS_Store$ ]] ; then #忽略.DS_Store和._前缀的Mac缓存文件
-                    ((_file_sum++))
-                    term_cols=$(tput cols)  # 获取终端宽度
-                    max_bar_width=$((term_cols - ${#_file_sum} - 11))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
-                    printf "\r\033[K"
-                    printf "Progress:%s:%s" "$_file_sum" "${f:0:$max_bar_width}"
-                    printf "\r\033[K"
-                    cp -a $f $_outpath${line}
-                    sleep 0.001
+                    fn_cp_file "$f" "$_outpath${f%/*}"
 			    else
 					printf "\r\033[K"
-			        echo "## Ignored: $f "
+			        echo "## Ignored: $f"
 				fi
     		done
 		elif [[ -f $line ]] ; then
 			if [[ ! -d $_outpath${line%/*} ]] ; then
 				mkdir -p $_outpath${line%/*}
 			fi
-			((_file_sum++))
-            term_cols=$(tput cols)  # 获取终端宽度
-            max_bar_width=$((term_cols - ${#_file_sum} - 3))  # 留出空间给其他文本（如 "Progress: " 和 "%"）
-            printf "\r\033[K"
-            printf "Progress:%s:%s" "$_file_sum" "${line:0:$max_bar_width}"
-            printf "\r\033[K"
-            cp -a $line $_outpath${line}
-            sleep 0.001
+			fn_cp_file "$line" "$_outpath${line%/*}"
 		else
 		    printf "\r\033[K"
 		    echo "## \"$line\": What is this????"
