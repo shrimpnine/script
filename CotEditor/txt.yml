@@ -23,7 +23,7 @@ extensions:
 filenames: []
 interpreters: []
 keywords:
-- beginString: ^((\s?)|(\t?))+(for|class|const|enum|func|if|import|return|static|switch)\s
+- beginString: ^((\s?)|(\t?))+(for|class|const|enum|func|if|import|return|static|switch|struct)\s
   regularExpression: true
 kind: general
 metadata:
@@ -67,4 +67,7 @@ values:
   ignoreCase: true
 - beginString: 'true'
   ignoreCase: true
-variables: []
+variables:
+- beginString: ^((\s?)|(\t?))+(var|let)\s
+  ignoreCase: true
+  regularExpression: true
