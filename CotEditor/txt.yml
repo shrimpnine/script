@@ -23,7 +23,7 @@ extensions:
 filenames: []
 interpreters: []
 keywords:
-- beginString: ^((\s?)|(\t?))+(for|class|const|enum|func|if|import|return|static|switch|struct)\s
+- beginString: ^((\s?)|(\t?))+(type|for|while|continue|break|class|const|enum|func|if|import|return|static|switch|struct)\s
   regularExpression: true
 kind: general
 metadata:
