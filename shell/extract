@@ -5,16 +5,16 @@
 #将所有输入需要解压的文件解压到当前文件夹
 
 function fn_help() {
-    echo "Example:"
-    echo "  $0 ./*.zip"
-    exit 1
+	echo "Example:"
+	echo "  $0 ./*.zip"
+	exit 1
 }
 while getopts h opt;
 do
-    case $opt in
-        h) fn_help ;;
-        ?) echo "error：$OPTARG" ; fn_help
-    esac
+	case $opt in
+		h) fn_help ;;
+		?) echo "error：$OPTARG" ; fn_help
+	esac
 done
 if [ ! "$1" ] ; then fn_help ; fi
 shift $((OPTIND-1))
@@ -22,8 +22,8 @@ shift $((OPTIND-1))
 IFS=$'\n'
 for _file in $@ ; do
 	if [[ -f $_file ]]; then #判断是否为文件
-    	_prefix=${_file%.*} #文件路径
-    	_suffix=${_file##*.} #文件后缀
+		_prefix=${_file%.*} #文件路径
+		_suffix=${_file##*.} #文件后缀
 		case $_suffix in
 			"iso")
 				if [[ $_suffix == "iso" ]] ; then
@@ -37,12 +37,22 @@ for _file in $@ ; do
 				echo "还未制作解压rar文件的命令"
 				exit
 			;;
-            "zip")
-                7zz x -o"$_prefix" "$_file"
-            ;;
-            "7z")
-                7zz x -o"$_prefix" "$_file"
-            ;;
+			"zip")
+				if command -v 7zz >/dev/null 2>&1; then
+					7zz x -o"$_prefix" "$_file"
+				fi
+				if command -v 7za >/dev/null 2>&1; then
+					7zz x -o"$_prefix" "$_file"
+				fi
+			;;
+			"7z")
+				if command -v 7zz >/dev/null 2>&1; then
+					7zz x -o"$_prefix" "$_file"
+				fi
+				if command -v 7za >/dev/null 2>&1; then
+					7zz x -o"$_prefix" "$_file"
+				fi
+			;;
 		esac
 	else
 		echo "没找到输入的文件: $_file"
