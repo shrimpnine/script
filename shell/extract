@@ -42,7 +42,7 @@ for _file in $@ ; do
 					7zz x -o"$_prefix" "$_file"
 				fi
 				if command -v 7za >/dev/null 2>&1; then
-					7zz x -o"$_prefix" "$_file"
+					7za x -o"$_prefix" "$_file"
 				fi
 			;;
 			"7z")
@@ -50,7 +50,7 @@ for _file in $@ ; do
 					7zz x -o"$_prefix" "$_file"
 				fi
 				if command -v 7za >/dev/null 2>&1; then
-					7zz x -o"$_prefix" "$_file"
+					7za x -o"$_prefix" "$_file"
 				fi
 			;;
 		esac
