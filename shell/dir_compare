@@ -1,0 +1,145 @@
+#!/bin/zsh
+
+# 显示帮助信息
+usage() {
+	echo "用法: $0 [-s 后缀] [-l 日志输出目录] <目录1> <目录2>"
+	echo "选项:"
+	echo "  -s <后缀>		可选，指定匹配的文件后缀（例如: .png）"
+	echo "  -l <日志目录>	可选，发现差异时输出日志到指定目录"
+	echo "  -h			   显示帮助信息"
+	echo ""
+	echo "示例:"
+	echo "  $0 ./dir_0 ./dir_1							  # 比较全部文件，不输出日志"
+	echo "  $0 -s .png ./dir_0 ./dir_1					  # 仅比较 .png 文件"
+	echo "  $0 -s .png -l ./logs ./dir_0 ./dir_1			# 仅比较 .png 文件并输出日志"
+	echo "  $0 -l ./logs ./dir_0 ./dir_1					# 比较全部文件并输出日志"
+	exit 1
+}
+
+# 初始化变量
+extension=""
+log_dir=""
+
+# 使用 getopts 解析命令行选项
+# 选项后面带冒号 (s:, l:) 表示该选项需要传参
+while getopts "s:l:h" opt; do
+	case ${opt} in
+		s)
+			extension="${OPTARG}"
+			;;
+		l)
+			log_dir="${OPTARG}"
+			;;
+		h)
+			usage
+			;;
+		\?)
+			usage
+			;;
+	esac
+done
+
+# 移去已被 getopts 处理的选项，剩下的就是位置参数（目录1 和 目录2）
+shift $((OPTIND - 1))
+
+# 检查剩余参数是否刚好为 2 个
+if [ "$#" -ne 2 ]; then
+	echo "错误: 必须提供两个要比较的目录路径"
+	usage
+fi
+
+dir_1="${1%/}"
+dir_2="${2%/}"
+
+# 验证目录是否存在
+if [ ! -d "$dir_1" ] || [ ! -d "$dir_2" ]; then
+	echo "错误: 提供的路径必须是有效的目录"
+	exit 1
+fi
+
+echo "========================================"
+echo "比较目录:"
+echo "  [1] ${dir_1}"
+echo "  [2] ${dir_2}"
+if [ -n "$extension" ]; then
+	echo "  过滤后缀: ${extension}"
+fi
+if [ -n "$log_dir" ]; then
+	echo "  日志目录: ${log_dir}"
+fi
+echo "========================================"
+
+# 获取文件的 sha256 哈希值
+get_sha256() {
+	local file="$1"
+	if command -v sha256sum &> /dev/null; then
+		sha256sum "$file" | awk '{print $1}'
+	else
+		shasum -a 256 "$file" | awk '{print $1}'
+	fi
+}
+
+# 临时文件，用于收集差异信息
+diff_temp=$(mktemp)
+
+# 匹配文件的函数：根据是否指定了后缀进行过滤
+should_process() {
+	local file="$1"
+	if [ -z "$extension" ]; then
+		return 0 # 没有指定后缀，全部匹配
+	else
+		[[ "$file" == *"$extension" ]] && return 0 || return 1
+	fi
+}
+
+# 1. 遍历 dir_1 中的文件，与 dir_2 进行对比
+find "$dir_1" -type f | while read -r file1; do
+	rel_path="${file1#$dir_1/}"
+
+	if should_process "$rel_path"; then
+		file2="$dir_2/$rel_path"
+
+		if [ -f "$file2" ]; then
+			hash1=$(get_sha256 "$file1")
+			hash2=$(get_sha256 "$file2")
+
+			if [ "$hash1" != "$hash2" ]; then
+				echo "${rel_path} 文件不同" >> "$diff_temp"
+			fi
+		else
+			echo "${rel_path} 在 ${dir_2} 中不存在" >> "$diff_temp"
+		fi
+	fi
+done
+
+# 2. 检查 dir_2 中独有的文件
+find "$dir_2" -type f | while read -r file2; do
+	rel_path="${file2#$dir_2/}"
+
+	if should_process "$rel_path"; then
+		file1="$dir_1/$rel_path"
+		if [ ! -f "$file1" ]; then
+			echo "${rel_path} 在 ${dir_1} 中不存在" >> "$diff_temp"
+		fi
+	fi
+done
+
+# 3. 结果处理与日志输出
+if [ -s "$diff_temp" ]; then
+	echo "发现以下差异:"
+	cat "$diff_temp"
+
+	# 如果开启了日志功能
+	if [ -n "$log_dir" ]; then
+		mkdir -p "$log_dir"
+		timestamp=$(date "+%Y%m%d_%H%M%S")
+		log_file="${log_dir%/}/diff_${timestamp}.log"
+		cat "$diff_temp" > "$log_file"
+		echo "日志已保存至: ${log_file}"
+	fi
+else
+	echo "对比的文件没有不同"
+fi
+
+# 清理临时文件
+rm -f "$diff_temp"
